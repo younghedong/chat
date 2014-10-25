@@ -1,13 +1,16 @@
-include<stdio.h>
+#include<stdio.h>
+#include<stdlib.h>
 #include<mysql.h>
 #include<string.h>
+#define true 1
+#define false 0
 
-const char *host = "localhost";
-const char *user = "root";
-const char *psd = "root";
-unsigned int port = 3306;
+static const char *host = "localhost";
+static const char *user = "root";
+static const char *psd = "root";
+static unsigned int port = 3306;
 //登陆查询
-bool selectpsd(char *dbName, char *uname, char *upsd)
+int selectpsd(char *dbName, char *uname, char *upsd)
 {
     MYSQL *mysql;
     MYSQL_RES *res;
