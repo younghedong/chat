@@ -17,6 +17,10 @@ void on_button_signup_clicked(GtkWidget *button, gpointer data)
 	{
 		g_print("error\n");
 	}
+	else
+	{
+		g_print("ok\n");
+	}
 }
 
 GtkWidget *login()
@@ -66,6 +70,6 @@ GtkWidget *login()
 	g_signal_connect(G_OBJECT(buttonok),"clicked",
 	G_CALLBACK(on_button_ok_clicked),NULL);
 	g_signal_connect(G_OBJECT(buttonsignup),"clicked",
-	G_CALLBACK(on_button_ok_clicked),NULL);
+	G_CALLBACK(on_button_signup_clicked),NULL);
 	return window;
 }
