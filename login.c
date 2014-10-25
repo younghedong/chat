@@ -7,13 +7,22 @@ void on_button_ok_clicked (GtkWidget* button,gpointer data)
 {
 	const gchar *username = gtk_entry_get_text(GTK_ENTRY(entry1));
 	const gchar *password = gtk_entry_get_text(GTK_ENTRY(entry2));
+	if(selectpsd((char *)username, (char *)password))
+	{
+		g_print("login ok\n");
+	}
+	else
+	{
+		g_print("error\n");
+	}
 }
 
 void on_button_signup_clicked(GtkWidget *button, gpointer data)
 {
 	const gchar *username = gtk_entry_get_text(GTK_ENTRY(entry1));
 	const gchar *password = gtk_entry_get_text(GTK_ENTRY(entry2));
-	if(!insertUser((char *)username, (char *)password))
+	g_print("username: %s\npasswd: %s\n", username, password);
+	if(insertUser((char *)username, (char *)password) == 0)
 	{
 		g_print("error\n");
 	}
