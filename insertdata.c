@@ -1,11 +1,15 @@
+#include <stdio.h>
+#include <stdlib.h>
 #include<mysql.h>
 #include<string.h>
+#define ture 1
+#define false 0
 const char *host = "localhost";
 const char *user = "root";
 const char *psd = "root";
 unsigned int port = 3306;
 
-bool insertUser(char *uname, char *upsd)
+int insertUser(char *uname, char *upsd)
 {
     MYSQL *mysql;
     MYSQL_RES *res;
