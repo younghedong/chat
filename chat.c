@@ -14,7 +14,7 @@ GtkWidget *chat()
             G_CALLBACK(gtk_main_quit),NULL);
 
     hbox = gtk_hbox_new(FALSE,0);
-    gkt_container_add(GTK_CONTAINER(window),hbox);
+    gtk_container_add(GTK_CONTAINER(window),hbox);
     vboxleft = gtk_vbox_new(FALSE,0);
     vboxright = gtk_vbox_new(FALSE,0);
     gtk_box_pack_start(GTK_BOX(hbox),vboxleft,FALSE,FALSE,5);
