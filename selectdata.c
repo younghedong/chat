@@ -9,8 +9,9 @@ static const char *host = "localhost";
 static const char *user = "root";
 static const char *psd = "root";
 static unsigned int port = 3306;
+static const char *dbName = "chatMysql";
 //登陆查询
-int selectpsd(char *dbName, char *uname, char *upsd)
+int selectpsd(char *uname, char *upsd)
 {
     MYSQL *mysql;
     MYSQL_RES *res;
