@@ -4,7 +4,7 @@
 #include <sys/socket.h>
 #include <netinet/in.h>
 #include <string.h>
-#include<gtk/gtk.h>
+//#include<gtk/gtk.h>
 #include<arpa/inet.h>
 #include<unistd.h>
 #include<pthread.h>
@@ -13,69 +13,78 @@ int sfp,nfp[NUM];
 int num=0;
 struct sockaddr_in s_add,c_add[NUM];
 
-void *accept()//接受链接，记录地址，生成socket
+void *acceptclient()//接受链接，记录地址，生成socket
 {
+	printf("执行到了accept\r\n");
 	int sin_size = sizeof(struct sockaddr_in);
-	int i=0;
-	while(num<NUM)
-	for(i=0;i<NUM;i++)
-	{	
-
-		nfp[i] = accept(sfp, (struct sockaddr *)(&c_add[i]), &sin_size);
-		if(-1 == nfp[i])
+	while(1)
+	{//for(i=0;i<NUM;i++)
+		nfp[num] = accept(sfp, (struct sockaddr *)(&c_add[num]), &sin_size);
+		if(-1 == nfp[num])
 		{
 		    printf("accept fail !\r\n");
-		    return -1;
 		}
-		num=i+1;//记录当前连接数
-		printf("accept %d ok!\r\nServer start get connect from %#x : %#x\r\n",i,ntohl(c_add[i].sin_addr.s_addr),ntohs(c_add[i].sin_port));
 
+		printf("accept %d OK!\r\nServer start get connect from %#x : %#x\r\n",nfp[num],ntohl(c_add[num].sin_addr.s_addr),ntohs(c_add[num].sin_port));
+		num++;//记录当前连接数
 	}
 
 }
 void *update()//向所有已连接客户端发送最新的连接表
 {
+	printf("执行到了update\r\n");
 	int j,tmp=0;
-	for(j=0;j<num;j++){
-		if(nfp[j]<0){//检察到有连接断开
-			tmp=j;
-			while(1)
-			{
-				if(tmp+1<NUM){
-				nfp[tmp]=nfp[tmp++];
-				}
-				else{
-					break;
-				}
-			}
-			num--;// 连接数-1
-		}
-	}
 	char send_buf[NUM][4];
-	for(j=0;j<num;j++)
+	int flag=1;
+	while(1)
 	{
-		sprintf(send_buf[j],"%d",nfp[j]);
-
-	}
-	for(j=0;j<num;j++)
-	{
-		if(-1 == write(nfp[j],send_buf,4*(num+1)))
-		{
-			printf("write fail!\r\n");
-			return -1;
+		for(j=0;j<num;j++){
+			if(nfp[j]<0){//检察到有连接断开,将该nfp【j】被后面的覆盖，依次前移
+				tmp=j;
+				while(1)
+				{
+					if(tmp+1<NUM){
+					nfp[tmp]=nfp[tmp++];
+					}
+					else{
+						break;
+					}
+				}
+				num--;// 连接数-1
+				j=0;
+				flag=1;//连接表有变化分发开关打开
+			}
 		}
-		printf("write ok!\r\n");
+		if(flag==1&&num>0)//向所有client分发最新的连接表
+		{
+			//printf("执行到了分发\r\n");
+			flag=0;
+			for(j=0;j<num;j++)
+			{
+				sprintf(send_buf[j],"%d",nfp[j]);
+
+			}
+			for(j=0;j<num;j++)
+			{
+				if(-1 == write(nfp[j],send_buf,4*(num)))
+				{
+					printf("write fail!\r\n");
+				}
+				//printf("write OK!\r\n");
+			}
+		}
 	}
 }
 void *read_write()
 {
+	printf("执行到了read_write\r\n");
 	char buffer[1024]={0};
 	int recbytes;
 	int i;
 	int target_scoket;
 	int source_scoket;
-	char *tmp_text;
-	char *send_buffer;
+	char tmp_text[1024];
+	char send_buffer[1024];
 	while(1)
 	{
 		for(i=0;i<num;i++)//分发消息
@@ -83,13 +92,18 @@ void *read_write()
 			if(-1 == (recbytes = read(nfp[i],buffer,1024)))
 			{
 				printf("read data fail !\r\n");
-				return -1;
 			}
-			printf("read ok\r\nREC:\r\n");
-			buffer[recbytes]='\0';//结尾
-			sscanf(buffer,"%d:%s",&target_scoket,tmp_text);//拿到目标socket
+			printf("read OK\r\nREC:\r\n");
+			//buffer[recbytes]='\0';//结尾
+			printf("%s\r\n",buffer);
+			sscanf(buffer,"%d:%[^\n]",&target_scoket,tmp_text);//拿到目标socket
+			//printf("%s\r\n",tmp_text);
+
 			sprintf(send_buffer,"%d:%s",nfp[i],tmp_text);
+
+			//printf("before write %s\r\n",send_buffer);
 			write(target_scoket,send_buffer,strlen(send_buffer));
+			//printf("after write %s\r\n",send_buffer);
 		}
 	}
 }
@@ -106,7 +120,7 @@ int main()
 	    printf("socket fail ! \r\n");
 	    return -1;
 	}
-	printf("socket ok !\r\n");
+	printf("socket OK !\r\n");
 
 
 	bzero(&s_add,sizeof(struct sockaddr_in));
@@ -119,18 +133,23 @@ int main()
 	    printf("bind fail !\r\n");
 	    return -1;
 	}
-	printf("bind ok !\r\n");
+	printf("bind OK !\r\n");
 
 	if(-1 == listen(sfp,5))
 	{
 	    printf("listen fail !\r\n");
 	    return -1;
 	}
-	printf("listen ok\r\n");
+	printf("listen OK\r\n");
+	pthread_t id1;
+	pthread_create(&id1,0,acceptclient,NULL);
 	pthread_t id2;
-	pthread_create(&id2,0,accept,NULL);
-	
-	close(sfp);
+	pthread_create(&id2,0,update,NULL);
+	pthread_t id3;
+	pthread_create(&id3,0,read_write,NULL);
+	getchar();
+	getchar();
+	//close(sfp);
 	return 0;
 }
 
