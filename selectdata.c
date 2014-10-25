@@ -2,8 +2,12 @@ include<stdio.h>
 #include<mysql.h>
 #include<string.h>
 
+const char *host = "localhost";
+const char *user = "root";
+const char *psd = "root";
+unsigned int port = 3306;
 //登陆查询
-bool selectpsd(char *host, char *user,char *psd, char *dbName, unsigned int port, char *uname, char *upsd)
+bool selectpsd(char *dbName, char *uname, char *upsd)
 {
     MYSQL *mysql;
     MYSQL_RES *res;
