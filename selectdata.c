@@ -16,6 +16,7 @@ int selectpsd(char *uname, char *upsd)
     MYSQL *mysql;
     MYSQL_RES *res;
     MYSQL_ROW row;
+    int rownum = 0;
     char *query = (char *)malloc(1024); //记录查询语句
 
     sprintf(query, "select * from user where userName = '%s'", uname);//查询语句赋值
@@ -25,24 +26,24 @@ int selectpsd(char *uname, char *upsd)
     {
         return false;
     }
-
     //判断数据库是否存在
-    if(mysql_select_db(mysql, dbName) != 0)
+    /*if(mysql_select_db(mysql, dbName) != 0)
     {
         return false;
     }
+	*/
     //数据查询
     if(mysql_real_connect(mysql, host, user, psd, dbName, port, NULL, 0))
     {
         mysql_real_query(mysql, query, strlen(query));
         res = mysql_store_result(mysql);
-        if(res)
+        if((rownum = mysql_num_rows(res)))
             {
                 row = mysql_fetch_row(res);
-                if(row[1] == upsd)
+                if(strcmp(row[1], upsd) == 0)
                 {
                     mysql_free_result(res);
-                    mysql_close(mysql);
+                    mysql_close(mysql);	
                     return true;
                 }
                 else
