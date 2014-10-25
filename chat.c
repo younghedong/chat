@@ -25,7 +25,7 @@ GtkWidget *chat()
             GTK_POLICY_AUTOMATIC,GTK_POLICY_AUTOMATIC);
     textmain = gtk_text_view_new();
     gtk_box_pack_start(GTK_BOX(vboxleft),view,TRUE,TRUE,5);
-    gtk_container_add(GTK_CONTAINER(view),text);
+    gtk_container_add(GTK_CONTAINER(view),textmain);
 
     hboxtool = gtk_hbox_new(FALSE,0);
     labelhistory = gtk_label_new("history");
@@ -39,7 +39,7 @@ GtkWidget *chat()
     gtk_box_pack_start(GTK_BOX(hboxmessage),button,FALSE,FALSE,5);
     gtk_box_pack_start(GTK_BOX(vboxleft),hboxmessage,FALSE,FALSE,5);
 
-    image = gtk_image_new_from_file();
+    image = gtk_image_new_from_file("");
     gtk_box_pack_start(GTK_BOX(vboxright),image,FALSE,FALSE,5);
 
     viewinfo = gtk_text_view_new();
