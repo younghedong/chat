@@ -1,0 +1,1 @@
+extern bool insertUser(char *uname, char *upsd);
