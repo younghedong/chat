@@ -51,6 +51,7 @@ GtkWidget *login()
 	gtk_window_set_title(GTK_WINDOW(window),"登录窗口");
 	gtk_window_set_position(GTK_WINDOW(window),GTK_WIN_POS_CENTER);
 	gtk_container_set_border_width(GTK_CONTAINER(window),20);
+	
 	box = gtk_vbox_new(FALSE,0);
 	gtk_container_add(GTK_CONTAINER(window),box);
 	box1 = gtk_hbox_new(FALSE,0);
@@ -74,7 +75,7 @@ GtkWidget *login()
 	gtk_widget_set_size_request(buttonok, 65, 35);
 	gtk_widget_set_size_request(buttonsignup, 65, 35);
 	gtk_box_pack_start(GTK_BOX(box),box3,FALSE,FALSE,5);
-	gtk_box_pack_start(GTK_BOX(box3),buttonsignup,FALSE,FALSE,65);
+	gtk_box_pack_start(GTK_BOX(box3),buttonsignup,FALSE,FALSE,50);
 	gtk_box_pack_start(GTK_BOX(box3),buttonok,FALSE,FALSE,2);
 	g_signal_connect(G_OBJECT(buttonok),"clicked",
 	G_CALLBACK(on_button_ok_clicked),NULL);
