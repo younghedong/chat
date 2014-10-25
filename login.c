@@ -1,35 +1,38 @@
 #include <gtk/gtk.h>
+#include <string.h>
 static GtkWidget* entry1;
 static GtkWidget* entry2;
 
 
 void on_button_ok_clicked (GtkWidget* button,gpointer data)
 {
+	gint type;
 	const gchar *username = gtk_entry_get_text(GTK_ENTRY(entry1));
 	const gchar *password = gtk_entry_get_text(GTK_ENTRY(entry2));
-	if(selectpsd((char *)username, (char *)password))
+	
+	if((type = selectpsd((char *)username, (char *)password)))
 	{
-		g_print("login ok\n");
+		informationdialog(type);
 	}
-	else
-	{
-		g_print("error\n");
-	}
+	gtk_entry_set_text(GTK_ENTRY(entry1), "");
+	gtk_entry_set_text(GTK_ENTRY(entry2), "");
 }
 
 void on_button_signup_clicked(GtkWidget *button, gpointer data)
 {
+	gint type;
 	const gchar *username = gtk_entry_get_text(GTK_ENTRY(entry1));
 	const gchar *password = gtk_entry_get_text(GTK_ENTRY(entry2));
-	g_print("username: %s\npasswd: %s\n", username, password);
-	if(insertUser((char *)username, (char *)password) == 0)
+	if(strlen(password) < 6)
 	{
-		g_print("error\n");
+		informationdialog(-6);
 	}
-	else
+	else if((type = insertUser((char *)username, (char *)password)))
 	{
-		g_print("ok\n");
+		informationdialog(type);
 	}
+	gtk_entry_set_text(GTK_ENTRY(entry1), "");
+	gtk_entry_set_text(GTK_ENTRY(entry2), "");
 }
 
 GtkWidget *login()

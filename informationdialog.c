@@ -10,7 +10,9 @@ GtkWidget *informationdialog(gint errornum)
 	switch(errornum)
 	{
 		case 0:
-			return NULL;
+			message = "注册成功";
+			type = GTK_MESSAGE_INFO;
+			break;
 		case -1:
 			message = "初始化错误";
 			type = GTK_MESSAGE_ERROR;
@@ -30,6 +32,9 @@ GtkWidget *informationdialog(gint errornum)
 			message = "用户名或密码错误";
 			type = GTK_MESSAGE_WARNING;
 			break; 
+		case -6:
+			message = "密码长度少于六位字符";
+			type = type = GTK_MESSAGE_WARNING;
 	}
 	dialog = gtk_message_dialog_new(NULL,
 		GTK_DIALOG_MODAL | GTK_DIALOG_DESTROY_WITH_PARENT,
