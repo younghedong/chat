@@ -1,5 +1,6 @@
 #include <gtk/gtk.h>
 #include <string.h>
+#include "chat.h"
 static GtkWidget* entry1;
 static GtkWidget* entry2;
 
@@ -12,6 +13,9 @@ void on_button_ok_clicked (GtkWidget* button,gpointer data)
 	
 	if((type = selectpsd((char *)username, (char *)password)))
 	{
+		if(type == 0)
+			chat();
+		else
 		informationdialog(type);
 	}
 	gtk_entry_set_text(GTK_ENTRY(entry1), "");
