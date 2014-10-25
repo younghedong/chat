@@ -24,7 +24,7 @@ int selectpsd(char *uname, char *upsd)
     //mysql初始化
     if(!(mysql = mysql_init(NULL)))
     {
-        return false;
+        return -1;
     }
     //判断数据库是否存在
     /*if(mysql_select_db(mysql, dbName) != 0)
@@ -44,20 +44,22 @@ int selectpsd(char *uname, char *upsd)
                 {
                     mysql_free_result(res);
                     mysql_close(mysql);	
-                    return true;
+                    return 0;
                 }
                 else
                 {
                     mysql_free_result(res);
                     mysql_close(mysql);
-                    return false;
+                    return -4;//密码错误
                 }
             }
         else
         {
             mysql_free_result(res);
             mysql_close(mysql);
-            return false;
+            return -5;//账户不存在
         }
     }
+    else
+	return -3;//连接数据库失败
 }

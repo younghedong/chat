@@ -2,8 +2,7 @@
 #include <stdlib.h>
 #include<mysql.h>
 #include<string.h>
-#define true 1
-#define false 0
+
 const char *host = "localhost";
 const char *user = "root";
 const char *psd = "root";
@@ -26,7 +25,7 @@ int insertUser(char *uname, char *upsd)
     //mysql初始化
     if(!(mysql = mysql_init(NULL)))
     {
-        return false;
+        return -1;
     }
 
     //判断数据库不存在，创建数据库和表
@@ -41,18 +40,18 @@ int insertUser(char *uname, char *upsd)
     {
         mysql_real_query(mysql, selectusertable, strlen(selectusertable));
         res = mysql_store_result(mysql);
-	g_print("select ok\n");
         if((rownum = mysql_num_rows(res)))//账号存在，不能注册
         {
             mysql_free_result(res);
             mysql_close(mysql);
-            return false;
+            return -2;
         }
-	g_print("no account\n");
         if(mysql_real_query(mysql, query, strlen(query)) == 0)//账号不存在，执行sql插入语句
         {
             mysql_close(mysql);
-            return true;
+            return 0;
         }
     }
+    else 
+	return -3;//连接数据库失败
 }
