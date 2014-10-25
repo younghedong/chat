@@ -13,6 +13,7 @@ int insertUser(char *uname, char *upsd)
 {
     MYSQL *mysql;
     MYSQL_RES *res;
+    int rownum = 0;
 
     //sql语句
     char *createdb = "create database chatMysql";
@@ -40,13 +41,15 @@ int insertUser(char *uname, char *upsd)
     {
         mysql_real_query(mysql, selectusertable, strlen(selectusertable));
         res = mysql_store_result(mysql);
-        if(res)//账号存在，不能注册
+	g_print("select ok\n");
+        if((rownum = mysql_num_rows(res)))//账号存在，不能注册
         {
             mysql_free_result(res);
             mysql_close(mysql);
             return false;
         }
-        if(mysql_real_query(mysql, query, strlen(query)) ==0)//账号不存在，执行sql插入语句
+	g_print("no account\n");
+        if(mysql_real_query(mysql, query, strlen(query)) == 0)//账号不存在，执行sql插入语句
         {
             mysql_close(mysql);
             return true;
