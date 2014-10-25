@@ -44,6 +44,6 @@ GtkWidget *chat()
 
     viewinfo = gtk_text_view_new();
     gtk_box_pack_start(GTK_BOX(vboxright),viewinfo,FALSE,FALSE,5);
-
+	gtk_widget_show_all(window);
     return window;
 }

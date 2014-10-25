@@ -8,14 +8,21 @@ static GtkWidget* entry2;
 void on_button_ok_clicked (GtkWidget* button,gpointer data)
 {
 	gint type;
+	GtkWidget *subwindow;
 	const gchar *username = gtk_entry_get_text(GTK_ENTRY(entry1));
 	const gchar *password = gtk_entry_get_text(GTK_ENTRY(entry2));
 	
-	if((type = selectpsd((char *)username, (char *)password)))
+	type = selectpsd((char *)username, (char *)password);
+	if(type == 0)
 	{
-		if(type == 0)
-			chat();
-		else
+		g_print("sub window\n");
+		//gtk_widget_destroy(data);
+		subwindow = chat();
+		gtk_widget_show_all(subwindow);
+		gtk_widget_show(subwindow);
+	}
+	else
+	{
 		informationdialog(type);
 	}
 	gtk_entry_set_text(GTK_ENTRY(entry1), "");
@@ -85,8 +92,8 @@ GtkWidget *login()
 	gtk_box_pack_start(GTK_BOX(box3),buttonsignup,FALSE,FALSE,50);
 	gtk_box_pack_start(GTK_BOX(box3),buttonok,FALSE,FALSE,2);
 	g_signal_connect(G_OBJECT(buttonok),"clicked",
-	G_CALLBACK(on_button_ok_clicked),NULL);
+	G_CALLBACK(on_button_ok_clicked),window);
 	g_signal_connect(G_OBJECT(buttonsignup),"clicked",
-	G_CALLBACK(on_button_signup_clicked),NULL);
+	G_CALLBACK(on_button_signup_clicked),window);
 	return window;
 }
