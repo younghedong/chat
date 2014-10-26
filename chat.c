@@ -12,6 +12,7 @@ GtkWidget *chat()
     gtk_container_set_border_width(GTK_CONTAINER(window),10);
     g_signal_connect(GTK_OBJECT(window),"destroy",
             G_CALLBACK(gtk_main_quit),NULL);
+    gtk_window_set_size(GTK_WINDOW(window),450,550);
 
     hbox = gtk_hbox_new(FALSE,0);
     gtk_container_add(GTK_CONTAINER(window),hbox);
