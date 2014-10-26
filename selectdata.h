@@ -1,1 +1,1 @@
-extern int selectpsd(char *dbName, char *uname, char *upsd);
+extern int selectpsd(char *uname, char *upsd);

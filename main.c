@@ -1,6 +1,8 @@
 #include <gtk/gtk.h>
 #include "login.h"
 #include "insertdata.h"
+#include "selectdata.h"
+#include "informationdialog.h"
 
 int main ( int argc , char* argv[])
 {	
