@@ -302,9 +302,9 @@ GtkWidget *create_main_window()
 }
 
 
-int main(int argc,char *argv[])
+GtkWidget* chat()
 {
-	gtk_init(&argc,&argv);
+	//gtk_init(&argc,&argv);
 	main_window=create_main_window();
 	gtk_widget_show(main_window);
 	gtk_main();
