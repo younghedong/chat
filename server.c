@@ -68,6 +68,7 @@ void *read_write(int *a)
 						//*a=-9;
 						flag=1;
 						num--;
+						
 						break;
 					
 
@@ -103,13 +104,18 @@ void *read_write(int *a)
 				else//正常转发
 				{
 					char nor_text[1024];
-					sscanf(tmp_text,"%[^:]:%s",target_name,nor_text);
+					sscanf(tmp_text,"%[^:]:%[^\n]",target_name,nor_text);
 					int tar_sock=name_to_socket(target_name);
-					sprintf(send_buffer,"%d:%s:%s",5555,user[*a],nor_text);
+					sprintf(send_buffer,"%d:%s:%s\n",5555,user[*a],nor_text);
 
 					//printf("before write %s\r\n",send_buffer);
 					//write(4,send_buffer,strlen(send_buffer));
-					write(tar_sock,send_buffer,strlen(send_buffer));
+					if(0!=write(tar_sock,send_buffer,strlen(send_buffer)))
+					{
+						char send_buff[30];
+						sprintf(send_buff,"%d:%s:%s\n",5555,"server","对方不在线");
+						write(*a,send_buff,strlen(send_buff));
+					}
 					//printf("after write %s\r\n",send_buffer);
 				}
 		}

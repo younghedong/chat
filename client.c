@@ -119,7 +119,7 @@ void *tcp_read()
 			
 				bzero(source_name,100);
 				bzero(nor_text,1024);
-				sscanf(ff,"%[^:]:%s",source_name,nor_text);
+				sscanf(ff,"%[^:]:%[^\n]",source_name,nor_text);
 				printf("%s 消息 %s\r\n",source_name,nor_text);
 				
 				gchar entrybuf[1024];
