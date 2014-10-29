@@ -13,28 +13,117 @@ int recbytes=0;
 char buffer[1024]={0};
 int target=-1;
 char *text;
+char nor_text[1024];
+char source_name[100];
+#define NUM 6
+
+void verify(char *username, char *password)
+{
+	char ch[1024];
+	char user[20];
+	char passwd[20];
+	
+	sprintf(user,"%s",username);
+	sprintf(passwd,"%s",password);
+	sprintf(ch,"%d:%s:%s\n",-9999,user,passwd);
+	write(cfd,ch,strlen(ch));
+}
+void tcp_send(char *user, char *text)
+{
+	
+	char buf[1024];
+	char send[1024];
+	char  targ[100];
+	//getchar();
+	printf("选择目标\r\n");
+	sprintf(targ,"%s",user);
+	sprintf(buf,"%s",text);
+	//gets(targ);
+	//sscanf(targ,"%s",target);
+	if(strcmp(targ,"0")==0)
+	{
+		close(cfd);
+		printf("已关闭cfd\r\n");
+	}
+	//printf("输入正文\r\n");
+	//gets(buf);
+	sprintf(send,"%d:%s:%s\r\n",5555,targ,buf);//正文发送
+	//printf("before write %s\r\n",send);
+	write(cfd,send,strlen(send));
+	//printf("after write %s\r\n",send);
+	//close(cfd);
+}
 void *tcp_read()
 {
 	char ff[1024];
+	int tt[NUM];
+	int num=0;
+	int update_flags=0;
+	printf("当前在线用户列表:\r\n");
+	char table[NUM][1024];
 	while(1)
 	{
-		bzero(buffer,1024);
-		if(-1 == (recbytes = read(cfd,buffer,1024)))
+		if(cfd>=0)
 		{
-			printf("read data fail !\r\n");
-			return 0;
+			//printf("cfd is %d\r\n",cfd);
+
+			bzero(buffer,1024);
+			if(-1 == (recbytes = read(cfd,buffer,1024)))
+			{
+				printf("read data fail !\r\n");
+				close(cfd);
+				cfd=-1;
+				break;
+			}
+			if(recbytes==0)
+			{
+				printf("connect fail!\r\n");
+				close(cfd);
+				cfd=-1;
+				break;
+			}
+			//printf("read ok\r\nREC:\r\n");
+			//buffer[recbytes]='\0';
+			//printf("%s\r\n",buffer);
+			//recbytes=0;
+			//bzero(buffer,1024);
+			sscanf(buffer,"%d:%[^\n]",&target,ff);
+
+			if(target<0&&target!=-1)//target<0 是更新
+			{
+					//while()
+					//sscanf(ff,"",&tt[num]);//ff存着当前的用户列表
+					//printf("用户：%d\r\n",tt);
+				//printf("%d 更新 %s\r\n",target,ff);
+				int tab=0;
+				char ttmp[1024];
+				for(tab=0;tab<NUM;tab++)//从ff中分解出每个在线的用户
+				{
+					bzero(ttmp,1024);
+					sscanf(ff,"%[^:]:%s",table[tab],ttmp);
+					bzero(ff,1024);
+					sprintf(ff,"%s",ttmp);
+				}
+				for(tab=0;tab<NUM;tab++)
+				{
+					printf("----%s-----\r\n",table[tab]);
+				}
+
+			}
+			else//是消息
+			{
+			
+				bzero(source_name,100);
+				bzero(nor_text,1024);
+				sscanf(ff,"%[^:]:%s",source_name,nor_text);
+				printf("%s 消息 %s\r\n",source_name,nor_text);
+			}
+			//printf("%d\r\n",target);
+			//printf("%d\r\n",tt);
 		}
-		//printf("read ok\r\nREC:\r\n");
-		buffer[recbytes]='\0';
-		printf("%s\r\n",buffer);
-		recbytes=0;
-		//bzero(buffer,1024);
-		sscanf(buffer,"%d:%[^\n]",&target,ff);
-		//printf("%d\r\n",target);
-		//printf("%s\r\n",ff);
 	}
 }
-int main()
+int client()
 {
 
 
@@ -66,25 +155,14 @@ int main()
 	}
 	printf("connect ok !\r\n");
 
+	//printf("选择目标\r\n");
+	//gets(targ);
+	//sscanf(targ,"%d",&target);
+	
 	pthread_t id2;
 	pthread_create(&id2,0,tcp_read,NULL);
 
-	while(1)
-	{
-		if(target>0)
-		{
-			char buf[1024];
-			char send[1024];
-			gets(buf);
-			sprintf(send,"%d:%s\r\n",target,buf);
-			//printf("before write pelese call me back\r\n");
-			write(cfd,send,strlen(send));
-			//printf("after write pelese call me back\r\n");
-		}
-	}
-			getchar();
-			getchar();
-	//close(cfd);
+	
 	return 0;
 }
 

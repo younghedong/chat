@@ -10,6 +10,8 @@ static const char *user = "root";
 static const char *psd = "root";
 static unsigned int port = 3306;
 static const char *dbName = "chatMysql";
+char **real_result;
+int flags = 0;
 
 /*****************************登陆查询***********************************/
 int selectpsd(char *uname, char *upsd)
@@ -28,15 +30,18 @@ int selectpsd(char *uname, char *upsd)
     {
         return -1;
     }
+
     //判断数据库是否存在
-    /*if(mysql_select_db(mysql, dbName) != 0)
-    {
-        return false;
-    }
-	*/
+    if((mysql_real_connect(mysql, host, user, psd, "mysql", port, NULL, 0)))
+     {
+        mysql_query(mysql, "create datebase if not exists chatMysql");
+        mysql_query(mysql, "use chatMysql");
+        mysql_query(mysql, "create table if not exists user(userName char(15) not null primary key, userPsd char(20) not null)");
+     /*}
+    
     //数据查询
     if(mysql_real_connect(mysql, host, user, psd, dbName, port, NULL, 0))
-    {
+    {*/
         mysql_real_query(mysql, query, strlen(query));
         res = mysql_store_result(mysql);
         if((rownum = mysql_num_rows(res)) > 0)
@@ -46,18 +51,21 @@ int selectpsd(char *uname, char *upsd)
                 if(strcmp(destring, upsd) == 0)
                 {
                     mysql_free_result(res);
+                    free(query);
                     mysql_close(mysql);	
                     return 0;
                 }
                 else
                 {
                     mysql_free_result(res);
+                    free(query);
                     mysql_close(mysql);
                     return -4;//密码错误
                 }
             }
         else
         {
+            free(query);
             mysql_close(mysql);
             return -5;//账户不存在
         }
@@ -68,73 +76,112 @@ int selectpsd(char *uname, char *upsd)
 
 
 //********************************聊天记录查询*******************************//
-char **select_chat_content(int num, char *send, char *accept)
+char **select_chat_content(int num, char *send, char *accept, char *seCon)
 {
     MYSQL *mysql;
-    MYSQL_RES *res;
+    MYSQL_RES *ress;
     MYSQL_ROW row;
-    int flags = 0;
+    
     int i = 0;
     char *belong = "\0";
-    char *tmp = (char *)malloc(1024);
-    char **result = (char **)malloc(1024);
-    char **real_result = (char **)malloc(4096);
-    char *select_chat_query = (char *)malloc(1024);
+    char *tmp = (char *)malloc(100);
+    char **result;
     
-    if(num == 0)
+    char *select_chat_query = (char *)malloc(100);
+    
+    result = (char **)malloc(1);//二级指针开辟空间
+    for(i = 0; i < 1; i++)
+        result[i] = (char *)malloc(20);
+
+    real_result = (char **)malloc(50);
+    for(i = 0; i < 50; i++)
+        real_result[i] = (char *)malloc(200);
+
+    if(num == 0)//判断客户端or服务端
         belong = "client";
     else
         belong = "server";
-
-    sprintf(select_chat_query, "select * from chatRecord where (belong = '%s' and send = '%s' and accept = '%s')", belong, send, accept);
-	g_print("%s",select_chat_query);
+    //if(seCon[0] == '\0')
+    //{
+        sprintf(select_chat_query, "select * from chatRecord where accept = '%s'", accept);
+		//g_print("%s", select_chat_query);
+	//select_chat_query = strcat("select * from chatRecord where accept = '",accept);
+	//strcat(select_chat_query, "'");
+    //}
+    //else
+    //{
+    //    sprintf(select_chat_query, "select * from chatRecord where accept = '%s' and content like '% %s %'", accept, seCon);
+	//select_chat_query = strcat("select * from chatRecord where accept = '",accept);
+	//strcat(select_chat_query, "'");
+	//strcat(select_chat_query, "' and content like '%");
+	//strcat(select_chat_query, seCon);
+	//strcat(select_chat_query, "%'");
+    //}
     //mysql初始化
     if(!(mysql = mysql_init(NULL)))
     {
-        strcpy("数据库初始化失败！", result[0]);
+        strcpy(result[0], "数据库初始化失败！");
+        free(tmp);
+        free(select_chat_query);
+        //free(result[0]);
+        for(i = 0; i < 50; i++)
+            free(real_result[i]);
         return result;
     }
     
     //查询数据库是否存在
-    /* if((mysql_real_connect(mysql, host, user, psd, "mysql", port, NULL, 0)))
+     if((mysql_real_connect(mysql, host, user, psd, "mysql", port, NULL, 0)))
      {
         mysql_query(mysql, "create datebase if not exists chatMysql");
         mysql_query(mysql, "use chatMysql");
         mysql_query(mysql, "create table if not exists chatRecord(belong char(10) not null, send char(15) not null, accept char(15) not null, content char(1024), time char(50))");
-        strcpy("无数据库！", result[0]);
-        return result;
-     }
-*/
+     /*}
+
     if((mysql_real_connect(mysql, host, user, psd, "chatMysql", port, NULL, 0)))
-    {
+    {*/
         mysql_real_query(mysql, select_chat_query, strlen(select_chat_query));
-        res = mysql_store_result(mysql);
-		g_print("123\n");
-        if((flags = mysql_num_rows(res)) > 0)
+        ress = mysql_store_result(mysql);
+		//g_print("165465\n");
+        flags = mysql_num_rows(ress);
+        //g_print("sdfsdf%dsfsss", flags);
+        if(flags)
         {
-			g_print("321");
             for(i = 0; i < flags; i++)
             {
-                row = mysql_fetch_row(res);
+                row = mysql_fetch_row(ress);
                 sprintf(tmp,"%s  %s  %s  %s  %s",row[0], row[1], row[2], row[3], row[4]);
-                strcpy(tmp, real_result[i]);
+                //g_print("%s\n", tmp);
+                strcpy(real_result[i], tmp);
             }
-            mysql_free_result(res);
+            mysql_free_result(ress);
             mysql_close(mysql);
+	        free(tmp);
+            free(select_chat_query);
+	        free(result[0]);
+	        //for(i = 0; i < flags; i++)
+	        // g_print("%s\n", real_result[i]);
             return real_result;
         }
         else
         {
-			g_print("shit shit\n");
             mysql_close(mysql);
-            strcpy("无记录！",result[0]);
+	        free(tmp);
+            free(select_chat_query);
+	        //free(result[0]);
+            for(i = 0; i < 50; i++)
+                free(real_result[i]);
+            strcpy(result[0], "无记录！");
             return result;
         }
     }
     else
     {
-		g_print("123456\n");
-        strcpy("数据库连接失败！", result[0]);
+	    free(tmp);
+        free(select_chat_query);
+	    //free(result[0]);
+        for(i = 0; i < 50; i++)
+            free(real_result[i]);
+        strcpy(result[0], "数据库连接失败！");
         return result;
     }
 }

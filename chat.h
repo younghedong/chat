@@ -1,1 +1,1 @@
-extern GtkWidget *chat();
+extern GtkWidget *chat(gchar *name);

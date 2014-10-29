@@ -15,11 +15,12 @@ void on_button_ok_clicked (GtkWidget* button,gpointer data)
 	type = selectpsd((char *)username, (char *)password);
 	if(type == 0)
 	{
-		g_print("sub window\n");
-		//gtk_widget_destroy(data);
-		subwindow = chat();
+		subwindow = contact(username);
 		gtk_widget_show_all(subwindow);
+		verify(username, password);
 		gtk_widget_show(subwindow);
+		//gtk_widget_destroy(data);
+		gtk_widget_hide_all(data);
 	}
 	else
 	{
@@ -38,8 +39,9 @@ void on_button_signup_clicked(GtkWidget *button, gpointer data)
 	{
 		informationdialog(-6);
 	}
-	else if((type = insertUser((char *)username, (char *)password)))
+	else
 	{
+		type = insertUser((char *)username, (char *)password);
 		informationdialog(type);
 	}
 	gtk_entry_set_text(GTK_ENTRY(entry1), "");
