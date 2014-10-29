@@ -8,13 +8,17 @@
 #include<arpa/inet.h>
 #include<unistd.h>
 #include<pthread.h>
+#include <gtk/gtk.h>
 int cfd;
 int recbytes=0;
-char buffer[1024]={0};
+char buffer1[1024]={0};
 int target=-1;
 char *text;
 char nor_text[1024];
 char source_name[100];
+
+extern GtkTextBuffer *buffer;
+extern GtkTextIter end;
 #define NUM 6
 
 void verify(char *username, char *password)
@@ -67,8 +71,8 @@ void *tcp_read()
 		{
 			//printf("cfd is %d\r\n",cfd);
 
-			bzero(buffer,1024);
-			if(-1 == (recbytes = read(cfd,buffer,1024)))
+			bzero(buffer1,1024);
+			if(-1 == (recbytes = read(cfd,buffer1,1024)))
 			{
 				printf("read data fail !\r\n");
 				close(cfd);
@@ -87,7 +91,7 @@ void *tcp_read()
 			//printf("%s\r\n",buffer);
 			//recbytes=0;
 			//bzero(buffer,1024);
-			sscanf(buffer,"%d:%[^\n]",&target,ff);
+			sscanf(buffer1,"%d:%[^\n]",&target,ff);
 
 			if(target<0&&target!=-1)//target<0 是更新
 			{
@@ -117,6 +121,14 @@ void *tcp_read()
 				bzero(nor_text,1024);
 				sscanf(ff,"%[^:]:%s",source_name,nor_text);
 				printf("%s 消息 %s\r\n",source_name,nor_text);
+				
+				gchar entrybuf[1024];
+				bzero(entrybuf,1024);
+				sprintf(entrybuf,"%s: %s\n",source_name, nor_text);
+				gtk_text_buffer_get_end_iter(buffer,&end);
+				//g_printf("消息: ");
+				gtk_text_buffer_insert(buffer,&end,entrybuf,-1);
+				
 			}
 			//printf("%d\r\n",target);
 			//printf("%d\r\n",tt);
