@@ -14,7 +14,7 @@ extern char chatlist[20][20];
 extern int count;
 extern char chatlistfoucs[20];
 char chathistorybuffer[20][51200];//每个聊天对话的buf
-
+char table[20][20];
 int cfd;
 int recbytes=0;
 char buffer1[1024]={0};
@@ -27,7 +27,16 @@ static char user[20];
 extern GtkTextBuffer *buffer;
 extern GtkTextIter end;
 extern GtkTextIter start;
-#define NUM 6
+#define NUM 20
+
+void requre_update(char *username)
+{
+	printf("刷新\r\n");
+	char s[1024];
+	sprintf(s,"%d:%s:%s\r\n",-7777,username,"abcdefg");//刷新标志发送
+	write(cfd,s,strlen(s));
+}
+
 
 void verify(char *username, char *password)
 {
@@ -73,7 +82,6 @@ void *tcp_read()
 	int update_flags=0;
 	printf("当前在线用户列表:\r\n");
 	char tem[51200];
-	char table[NUM][1024];
 	while(1)
 	{
 		if(cfd>=0)
@@ -114,6 +122,10 @@ void *tcp_read()
 				{
 					bzero(ttmp,1024);
 					sscanf(ff,"%[^:]:%s",table[tab],ttmp);
+					/*if(strcmp(table[tab],"")==0)
+					{
+						break;
+					}*/
 					bzero(ff,1024);
 					sprintf(ff,"%s",ttmp);
 				}

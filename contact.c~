@@ -156,7 +156,7 @@ void update_view(GtkWidget *widget,gpointer data)
   	GtkTreeModel *model,*modeltmp;
   	GtkTreeIter  iter;
   	bzero(userlist, sizeof(userlist));
-	bzero(table, sizeof(table));
+	
 	g_print("userNAME: %s\n", usrName);
 	requre_update(usrName);
 	sleep(1);

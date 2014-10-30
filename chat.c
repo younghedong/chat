@@ -25,6 +25,7 @@ GtkWidget *list,*entry;
 GtkWidget *liaolabel;
 GtkTreeSelection *selection;
 GtkWidget *liaolist;
+GtkWidget *keyword_text;
 //定义文本缓冲区的迭代，用于替代缓冲区的某一位置，用来插入数据
 GtkTextIter start,end;
 
@@ -55,6 +56,7 @@ void add_to_list(GtkWidget *list, const gchar *str)
 {
   GtkListStore *store;
   GtkTreeIter iter;
+  strcpy(chatlistfoucs,str);
 
   store = GTK_LIST_STORE(gtk_tree_view_get_model(GTK_TREE_VIEW(list)));
   gtk_list_store_append(store, &iter);
@@ -122,19 +124,33 @@ void on_check2_clicked(GtkToggleButton  *check,gpointer text)
 //
 void on_search_clicked(GtkWidget *widget, gpointer data)
 {
+	GtkTextBuffer *buffertmp;
+	GtkTextIter	starttmp,endtmp;
+	GtkTextIter iter; 
+    int i = 0;
 	char content[30];
 	strcpy(content, gtk_entry_get_text(GTK_ENTRY(data)));
 	g_print("entry: %s\n", content);
 	bzero(real_result,50*200);
 	select_chat_content(0, usrName, NULL, content);
 	
-	
+	gtk_text_buffer_get_bounds(GTK_TEXT_BUFFER(KeyBuffer),&starttmp,&endtmp);
+	gtk_text_buffer_delete(GTK_TEXT_BUFFER(KeyBuffer),&starttmp,&endtmp);
+    while(i < flags)
+	{
+		//KeyBuffer=gtk_text_view_get_buffer(GTK_TEXT_VIEW(text));
+		gtk_text_buffer_get_end_iter(KeyBuffer,&iter); 
+    	gtk_text_buffer_insert(KeyBuffer,&iter,real_result[i],-1);
+    
+		g_printf("00000%s\n",real_result[i]);
+		i++;
+	}
 }
 
 //查询按钮函数
 GtkWidget *create_keyword_window()
 {
-	GtkWidget *window1,*vbox,*hbox,*frame,*vbar,*text,*label,*button1,*entry,*fix;
+	GtkWidget *window1,*vbox,*hbox,*frame,*vbar,*label,*button1,*entry,*fix;
 	window1=gtk_window_new(GTK_WINDOW_TOPLEVEL);
 	//g_signal_connect(G_OBJECT(window1),"delete_event",G_CALLBACK(on_sub_delete),window1);
     gtk_window_set_title(GTK_WINDOW(window1),"Check by Keywords");
@@ -150,6 +166,7 @@ GtkWidget *create_keyword_window()
 	hbox=gtk_hbox_new(FALSE,0);
 	gtk_box_pack_start(GTK_BOX(vbox),hbox,FALSE,FALSE,2);
 	button1=gtk_button_new_with_label("查找");
+	gtk_widget_set_size_request(button1,120,30);
 	fix=gtk_fixed_new();
     //gtk_widget_set_size_request(fix,20,20);
 	gtk_fixed_put(GTK_FIXED(fix),button1,100,0);
@@ -165,26 +182,13 @@ GtkWidget *create_keyword_window()
     gtk_scrolled_window_set_policy(GTK_SCROLLED_WINDOW(vbar),GTK_POLICY_AUTOMATIC,GTK_POLICY_AUTOMATIC); 
     g_signal_connect(G_OBJECT(button1),"clicked",G_CALLBACK(on_search_clicked),entry);
 	//创建文本视图，加入滚动窗口
-	text=gtk_text_view_new(); 
-    gtk_container_add(GTK_CONTAINER(vbar),text); 
-    KeyBuffer=gtk_text_view_get_buffer(GTK_TEXT_VIEW(text));
-    GtkTextIter iter; 
-    int i = 0;
-    while(i < flags)
-	{
-		KeyBuffer=gtk_text_view_get_buffer(GTK_TEXT_VIEW(text));
-		gtk_text_buffer_get_end_iter(KeyBuffer,&iter); 
-    	gtk_text_buffer_insert(KeyBuffer,&iter,real_result[i],-1);
+	keyword_text=gtk_text_view_new(); 
+    gtk_container_add(GTK_CONTAINER(vbar),keyword_text); 
+    KeyBuffer=gtk_text_view_get_buffer(GTK_TEXT_VIEW(keyword_text));
     
-    	
-		
-		g_printf("00000%s\n",real_result[i]);
-		i++;
-	}
-	
 	//是文本视图不可编辑
-    gtk_text_view_set_editable(GTK_TEXT_VIEW(text),FALSE);
-	gtk_text_view_set_wrap_mode(GTK_TEXT_VIEW(text),GTK_WRAP_WORD);	
+    gtk_text_view_set_editable(GTK_TEXT_VIEW(keyword_text),FALSE);
+	gtk_text_view_set_wrap_mode(GTK_TEXT_VIEW(keyword_text),GTK_WRAP_WORD);	
 	
 	gtk_widget_show_all(window1);
 	return window1;
@@ -293,7 +297,7 @@ void on_sent_clicked(GtkWidget *button,gpointer* name1)
 	char ss[20];
 	sprintf(ss,"%s",chatlistfoucs);
 	g_print("ss  is %s",ss);
-	//if(strlen(entrybuf))
+	//if(strcmp(entrybuf, "") != 0)
 	{
 		tcp_send(ss, (char *)entrybuf);
 		//bzero(entrybuf, sizeof(entrybuf));
