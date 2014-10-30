@@ -10,7 +10,7 @@ static const char *user = "root";
 static const char *psd = "root";
 static unsigned int port = 3306;
 static const char *dbName = "chatMysql";
-char **real_result;
+char real_result[50][200];
 int flags = 0;
 
 /*****************************登陆查询***********************************/
@@ -93,10 +93,10 @@ char **select_chat_content(int num, char *send, char *accept, char *seCon)
     for(i = 0; i < 1; i++)
         result[i] = (char *)malloc(20);
 
-    real_result = (char **)malloc(50);
+    /*real_result = (char **)malloc(50);
     for(i = 0; i < 50; i++)
         real_result[i] = (char *)malloc(200);
-
+    */
     if(num == 0)//判断客户端or服务端
         belong = "client";
     else
