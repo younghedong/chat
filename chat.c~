@@ -73,7 +73,7 @@ void  click_list(GtkWidget *widget, gpointer label)
     gtk_label_set_text(GTK_LABEL(label), value);
 	printf("%s\n",value);
 	
-	gtk_text_buffer_get_bounds(GTK_TEXT_BUFFER(buffer),&start,&end);
+	/*gtk_text_buffer_get_bounds(GTK_TEXT_BUFFER(buffer),&start,&end);
 	gtk_text_buffer_delete(GTK_TEXT_BUFFER(buffer), &start, &end);
 	
 	int chatlistnum = 0; 
@@ -85,7 +85,7 @@ void  click_list(GtkWidget *widget, gpointer label)
 		}
 	}
 	g_print("新用户：\n");
-	gtk_text_buffer_insert(buffer,&start,chathistorybuffer[chatlistnum],-1);
+	gtk_text_buffer_insert(buffer,&start,chathistorybuffer[chatlistnum],-1);*/
 	strcpy(chatlistfoucs, value);
     g_free(value);
   }

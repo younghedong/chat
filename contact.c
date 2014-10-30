@@ -2,9 +2,13 @@
 #include <time.h>
 #include "chat.h"
 
+extern void add_to_list(GtkWidget *list, const gchar *str);
+extern GtkWidget *liaolist;
 static GtkWidget *clocker;
-static GtkWidget * chatwindow[50];
-static int chatwindownum = 0;
+int chatwindownum = 0;
+extern GtkWidget * ChatWindow;
+char chatlist[20][20];
+int count = 0;
 enum {
     COLUMN = 0,
     NUM_COLS
@@ -15,7 +19,10 @@ void on_changed(GtkWidget * widget, gpointer statusbar)
     GtkTreeIter iter;
     GtkTreeModel *model;
     char *value;
-
+    int flag = 1;
+    int k = 0, m = 0, n = 0;
+	//static GtkWidget * ChatWindow;
+	
 
     if (gtk_tree_selection_get_selected(GTK_TREE_SELECTION(widget), &model, &iter)) {
 
@@ -27,12 +34,38 @@ void on_changed(GtkWidget * widget, gpointer statusbar)
 		{}
 		else
 		{
-			//pthread_t id2;
-			//pthread_create(&id2,0,chat,value);
-			//gdk_threads_enter();
-			//if(fork() == 0)
-				chat(value);
-			//gdk_threads_leave();
+			if(chatwindownum == 0)
+			{	
+				chatwindownum = 1;
+				for(k = 0; k < 20; k++)
+					for(m = 0; m < 20; m++)
+						chatlist[k][m] = '\0';
+						
+				ChatWindow = chat(value);
+				strcpy(chatlist[0], value);
+				count = 1;
+			}
+			else
+			{
+				
+				flag = 1;
+				g_print("count: %d\n", count);
+				for(n = 0; n < count; n++)
+				{
+					if(strcmp(chatlist[n], value) == 0)
+					{
+						gtk_widget_show(ChatWindow);
+						flag = 0;
+						break;
+					}
+				}
+				if(flag)
+				{
+					add_to_list(liaolist, value);
+					strcpy(chatlist[count], value);	
+					count ++;
+				}
+			}
 		}
 
         g_free(value);
