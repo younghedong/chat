@@ -1,6 +1,7 @@
 #include <gtk/gtk.h>
 #include <stdio.h>
 #define GTK_ENABLE_BROKEN
+extern char usrName[20];
 extern int cfd;
 extern char **real_result;
 extern int flags;
@@ -46,8 +47,12 @@ void on_sub_delete(GtkWidget *window,GdkEvent *event,gpointer data)
 }
 
 //
-void on_search_clicked()
+void on_search_clicked(GtkWidget *widget, gpointer data)
 {
+	char content[30];
+	strcpy(content, gtk_entry_get_text(GTK_ENTRY(data)));
+	g_print("entry: %s\n", content);
+	select_chat_content(0, usrName, NULL, content);
 	
 }
 
@@ -56,7 +61,7 @@ void create_keyword_window()
 {
 	GtkWidget *window1,*vbox,*hbox,*frame,*vbar,*text,*label,*button1,*entry,*fix;
 	window1=gtk_window_new(GTK_WINDOW_TOPLEVEL);
-	g_signal_connect(G_OBJECT(window1),"delete_event",G_CALLBACK(on_sub_delete),window1);
+	//g_signal_connect(G_OBJECT(window1),"delete_event",G_CALLBACK(on_sub_delete),window1);
     gtk_window_set_title(GTK_WINDOW(window1),"Check by Keywords");
     gtk_widget_set_size_request(window1,260,360);
     //gtk_window_set_position(GTK_WINDOW(window1),GTK_WIN_POS_CENTER);
@@ -72,7 +77,7 @@ void create_keyword_window()
 	fix=gtk_fixed_new();
     //gtk_widget_set_size_request(fix,20,20);
 	gtk_fixed_put(GTK_FIXED(fix),button1,100,0);
-	g_signal_connect(G_OBJECT(button1),"clicked",G_CALLBACK(on_search_clicked),NULL);
+	
 	gtk_box_pack_start(GTK_BOX(vbox),fix,FALSE,FALSE,5);	
 	label=gtk_label_new("输入关键字");
 	gtk_box_pack_start(GTK_BOX(hbox),label,FALSE,FALSE,2);	
@@ -82,6 +87,7 @@ void create_keyword_window()
 	gtk_container_add(GTK_CONTAINER(vbox),vbar);	
 	//gtk_box_pack_start(GTK_BOX(vbox1),view,TRUE,TRUE,5); 
     gtk_scrolled_window_set_policy(GTK_SCROLLED_WINDOW(vbar),GTK_POLICY_AUTOMATIC,GTK_POLICY_AUTOMATIC); 
+    g_signal_connect(G_OBJECT(button1),"clicked",G_CALLBACK(on_search_clicked),entry);
 	//创建文本视图，加入滚动窗口
 	text=gtk_text_view_new(); 
     gtk_container_add(GTK_CONTAINER(vbar),text); 
@@ -169,7 +175,8 @@ void on_sent_clicked(GtkWidget *button,gpointer* name1)
 	//gtk_text_buffer_insert_with_tags_by_name(buffer,&iter,"Dialog information\n\n ",-1,"orange_foreground",NULL);
 	//gtk_text_buffer_create_tag(buffer,"red_foreground","foreground","red",NULL);//最后一位参数必须为空
 	gtk_text_buffer_insert(buffer,&end,entrybuf,-1);
-	insert_chat_data(0, "hedong", "ren", entrybuf);
+	g_print("userName: %s\n", usrName);
+	insert_chat_data(0, usrName, name, entrybuf);
 	g_printf("name: %s\n entrybuf: %s\n", name, entrybuf);
 	char ss[20];
 	sprintf(ss,"%s",name);

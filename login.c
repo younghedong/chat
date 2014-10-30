@@ -3,13 +3,14 @@
 #include "chat.h"
 static GtkWidget* entry1;
 static GtkWidget* entry2;
-
+char usrName[20];
 
 void on_button_ok_clicked (GtkWidget* button,gpointer data)
 {
 	gint type;
 	GtkWidget *subwindow;
 	const gchar *username = gtk_entry_get_text(GTK_ENTRY(entry1));
+	strcpy(usrName, username);
 	const gchar *password = gtk_entry_get_text(GTK_ENTRY(entry2));
 	
 	type = selectpsd((char *)username, (char *)password);

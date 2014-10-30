@@ -110,7 +110,7 @@ void *read_write(int *a)
 
 					//printf("before write %s\r\n",send_buffer);
 					//write(4,send_buffer,strlen(send_buffer));
-					if(0!=write(tar_sock,send_buffer,strlen(send_buffer)))
+					if(strlen(send_buffer)!=write(tar_sock,send_buffer,strlen(send_buffer)))
 					{
 						char send_buff[30];
 						sprintf(send_buff,"%d:%s:%s\n",5555,"server","对方不在线");

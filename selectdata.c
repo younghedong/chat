@@ -101,22 +101,22 @@ char **select_chat_content(int num, char *send, char *accept, char *seCon)
         belong = "client";
     else
         belong = "server";
-    //if(seCon[0] == '\0')
-    //{
+    if(seCon == NULL)
+    {
         sprintf(select_chat_query, "select * from chatRecord where accept = '%s'", accept);
-		//g_print("%s", select_chat_query);
+		g_print("%s", select_chat_query);
 	//select_chat_query = strcat("select * from chatRecord where accept = '",accept);
 	//strcat(select_chat_query, "'");
-    //}
-    //else
-    //{
-    //    sprintf(select_chat_query, "select * from chatRecord where accept = '%s' and content like '% %s %'", accept, seCon);
-	//select_chat_query = strcat("select * from chatRecord where accept = '",accept);
-	//strcat(select_chat_query, "'");
-	//strcat(select_chat_query, "' and content like '%");
-	//strcat(select_chat_query, seCon);
-	//strcat(select_chat_query, "%'");
-    //}
+    }
+    else
+    {
+    	strcpy(select_chat_query, "select * from chatRecord where content like '%");
+        //sprintf(select_chat_query, "select * from chatRecord where content like \'\%%s\%\'", seCon);
+		//strcat(select_chat_query, "' and content like '%");
+		strcat(select_chat_query, seCon);
+		strcat(select_chat_query, "%'");
+		//g_print("%s\n", select_chat_query);
+    }
     //mysql初始化
     if(!(mysql = mysql_init(NULL)))
     {
@@ -139,6 +139,8 @@ char **select_chat_content(int num, char *send, char *accept, char *seCon)
 
     if((mysql_real_connect(mysql, host, user, psd, "chatMysql", port, NULL, 0)))
     {*/
+    	//mysql_query(mysql, "select * from chatRecord where content like '%哈%'");
+    	//g_print("sdfsdfsd\n");
         mysql_real_query(mysql, select_chat_query, strlen(select_chat_query));
         ress = mysql_store_result(mysql);
 		//g_print("165465\n");
@@ -150,7 +152,7 @@ char **select_chat_content(int num, char *send, char *accept, char *seCon)
             {
                 row = mysql_fetch_row(ress);
                 sprintf(tmp,"%s  %s  %s  %s  %s",row[0], row[1], row[2], row[3], row[4]);
-                //g_print("%s\n", tmp);
+                g_print("%s\n", tmp);
                 strcpy(real_result[i], tmp);
             }
             mysql_free_result(ress);
