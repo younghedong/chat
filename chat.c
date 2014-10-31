@@ -298,9 +298,14 @@ void on_sent_clicked(GtkWidget *button,gpointer* name1)
 	sprintf(ss,"%s",chatlistfoucs);
 	g_print("ss  is %s",ss);
 	//if(strcmp(entrybuf, "") != 0)
+	if(strcmp(chatlistfoucs, "public") != 0)
 	{
 		tcp_send(ss, (char *)entrybuf);
 		//bzero(entrybuf, sizeof(entrybuf));
+	}
+	else
+	{
+		tcp_send("public", (char *)entrybuf);
 	}
 }
 
@@ -352,7 +357,7 @@ GtkWidget *create_main_window(gchar *name)
 	
 	listview=gtk_scrolled_window_new(NULL,NULL);
 	gtk_container_add(GTK_CONTAINER(listframe),listview);	
-    gtk_scrolled_window_set_policy(GTK_SCROLLED_WINDOW(view),GTK_POLICY_AUTOMATIC,GTK_POLICY_ALWAYS); 
+    gtk_scrolled_window_set_policy(GTK_SCROLLED_WINDOW(listview),GTK_POLICY_AUTOMATIC,GTK_POLICY_ALWAYS); 
 
 	liaolist = gtk_tree_view_new();
   	gtk_tree_view_set_headers_visible(GTK_TREE_VIEW(liaolist), FALSE); 
@@ -474,7 +479,7 @@ GtkWidget *create_main_window(gchar *name)
 	g_printf("mainwindow: %s\n", name);
 //......................................第二列设置................................	
 	//用于创建图片控件和端口显示
-	image=gtk_image_new_from_file("xiaoxiong.jpg");
+	image=gtk_image_new_from_file("./resource/2.jpg");
         frame=gtk_frame_new("");
 	gtk_frame_set_shadow_type(GTK_FRAME(frame),GTK_SHADOW_ETCHED_OUT);
 	gtk_widget_set_size_request(frame,135,135);	

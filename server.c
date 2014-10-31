@@ -131,16 +131,35 @@ void *read_write(int *a)
 					{
 						char nor_text[1024];
 						sscanf(tmp_text,"%[^:]:%[^\n]",target_name,nor_text);
-						int tar_sock=name_to_socket(target_name);
-						sprintf(send_buffer,"%d:%s:%s\n",5555,user[*a],nor_text);
-						printf("tar is %d\r\n",tar_sock);
-						//printf("before write %s\r\n",send_buffer);
-						//write(4,send_buffer,strlen(send_buffer));
-						if(strlen(send_buffer)!=write(tar_sock,send_buffer,strlen(send_buffer)))
+						if(strcmp(target_name,"public")==0)
 						{
-							char send_buff[30];
-							sprintf(send_buff,"%d:%s:%s\n",5555,"server","对方不在线");
-							write(*a,send_buff,strlen(send_buff));
+							int nnn;
+							char tt[50];
+							sprintf(tt,"%d:%s%s:%s\n",5555,"public",user[*a],nor_text);
+							for(nnn=0;nnn<20;nnn++)
+							{
+								if(nfp_f[nnn]==1)
+								{
+									printf("群聊%d\r\n",nnn);
+									if(strlen(tt)!= write(nnn,tt,strlen(tt)))
+									{
+										printf("群聊失败\r\n");
+									}
+								}
+							}
+						}
+						else{
+							int tar_sock=name_to_socket(target_name);
+							sprintf(send_buffer,"%d:%s:%s\n",5555,user[*a],nor_text);
+							printf("tar is %d\r\n",tar_sock);
+							//printf("before write %s\r\n",send_buffer);
+							//write(4,send_buffer,strlen(send_buffer));
+							if(strlen(send_buffer)!=write(tar_sock,send_buffer,strlen(send_buffer)))
+							{
+								char send_buff[30];
+								sprintf(send_buff,"%d:%s:%s\n",5555,"server","对方不在线");
+								write(*a,send_buff,strlen(send_buff));
+							}
 						}
 						//printf("after write %s\r\n",send_buffer);
 					}
@@ -288,6 +307,7 @@ int main()
 {
 	
 
+	//bzero(nfp_f,strlen(nfp_f);
 	unsigned short portnum=0x8888;
 	sprintf(flush_name,"%s","");//清空刷新标志
 	printf("Hello,welcome to my server !\r\n");

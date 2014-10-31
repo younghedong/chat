@@ -9,7 +9,7 @@
 #include<unistd.h>
 #include<pthread.h>
 #include <gtk/gtk.h>
-
+#define IP "172.17.21.32"
 extern char chatlist[20][20];
 extern int count;
 extern char chatlistfoucs[20];
@@ -82,6 +82,8 @@ void *tcp_read()
 	int update_flags=0;
 	printf("当前在线用户列表:\r\n");
 	char tem[51200];
+	char s_name[20];
+	char public[7] = "public";
 	while(1)
 	{
 		if(cfd>=0)
@@ -144,6 +146,28 @@ void *tcp_read()
 				printf("%s 消息 %s\r\n",source_name,nor_text);
 				gtk_text_buffer_get_end_iter(buffer,&end);
 				
+				int ii = 0;
+				for(ii = 0; ii < 6; ii++)
+				{
+					if(public[ii] != source_name[ii])
+						break;
+				}
+				if(ii == 5)
+				{
+					int length = strlen(source_name);
+					for(ii = 0; ii < length; ii++)
+					{
+						source_name[ii] = source_name[ii+5];
+						source_name[ii+5] = '\0';
+					}
+					strcpy(s_name, source_name);
+					char ss[20];
+					bzero(ss,20);
+					sprintf(ss,"%s: %s\r\n",s_name, nor_text);
+					strcpy(nor_text, ss);
+					strcpy(source_name, "public");
+					
+				}
 				if(strcmp(source_name, "server") == 0)
 				{
 					gtk_text_buffer_insert(buffer,&end,ff,-1);
@@ -210,7 +234,7 @@ int client()
 
 	bzero(&s_add,sizeof(struct sockaddr_in));
 	s_add.sin_family=AF_INET;
-	s_add.sin_addr.s_addr= inet_addr("127.0.0.1");
+	s_add.sin_addr.s_addr= inet_addr(IP);
 	s_add.sin_port=htons(portnum);
 	printf("s_addr = %#x ,port : %#x\r\n",s_add.sin_addr.s_addr,s_add.sin_port);
 
